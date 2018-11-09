@@ -1,15 +1,31 @@
 public class BulletinBoardClient {
-	public static void main(String[] args) {
-        EventListener onLogin = new EventListener() {
-            public void onEvent() {
-                BulletinBoardClient.launchLoggedInScreen();
-            }
-        };
+    private LoginScreen loginScreen;
+    private BulletinBoardClientManager manager;
 
-        BulletinBoardClientManager manager = new BulletinBoardClientManager();
-        new LoginScreen(manager, onLogin).setVisible(true);
+	public static void main(String[] args) {
+        new BulletinBoardClient().launchLoginScreen();
 	}
 
-    public static void launchLoggedInScreen() {
+    BulletinBoardClient() {
+        manager = new BulletinBoardClientManager();
+    }
+
+    private void launchLoginScreen() {
+        loginScreen = new LoginScreen(manager);
+
+        loginScreen.setOnLoginEventListener(new EventListener() {
+            public void onEvent() {
+                launchLoggedInScreen(manager);
+                loginScreen.setVisible(false);
+                loginScreen.dispose();
+            }
+        });
+
+        loginScreen.setVisible(true);
+    }
+
+    private void launchLoggedInScreen(BulletinBoardClientManager manager) {
+        TopicListScreen topicListScreen = new TopicListScreen(manager);
+        topicListScreen.setVisible(true);
     }
 }

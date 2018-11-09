@@ -6,9 +6,8 @@ class LoginScreen extends JFrame {
     private BulletinBoardClientManager manager;
     private EventListener onLogin;
 
-    public LoginScreen(BulletinBoardClientManager manager, EventListener onLogin) {
+    public LoginScreen(BulletinBoardClientManager manager) {
         this.manager = manager;
-        this.onLogin = onLogin;
         createGUI();
     }
 
@@ -37,18 +36,22 @@ class LoginScreen extends JFrame {
 
         JButton loginButton = new JButton();
         loginButton.setText("Login");
-
+        getRootPane().setDefaultButton(loginButton);
         loginButtonPanel.add(loginButton);
 
 		loginButton.addActionListener (new java.awt.event.ActionListener () {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
                 usernameTextField.setEditable(false);
-                manager.login(usernameTextField.getText());
+                manager.authenticateUser(usernameTextField.getText());
                 onLogin.onEvent();
 			}
 		}  );
 
         cp.add(usernamePanel, "North");
         cp.add(loginButtonPanel, "South");
+    }
+
+    public void setOnLoginEventListener(EventListener onLogin) {
+        this.onLogin = onLogin;
     }
 }
