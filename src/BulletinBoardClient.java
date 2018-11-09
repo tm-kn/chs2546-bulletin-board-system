@@ -1,3 +1,7 @@
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
+
 public class BulletinBoardClient {
     private LoginScreen loginScreen;
     private BulletinBoardClientManager manager;
@@ -7,7 +11,22 @@ public class BulletinBoardClient {
 	}
 
     BulletinBoardClient() {
+        createManager();
+    }
+
+    private void createManager() {
         manager = new BulletinBoardClientManager();
+
+        // Connect to JavaSpace
+        try {
+            manager.connectToJavaSpace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(
+                null, "Cannot connect to JavaSpace.", "Bulletin Board",
+                JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
     }
 
     private void launchLoginScreen() {
