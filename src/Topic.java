@@ -10,4 +10,8 @@ class Topic implements Entry {
         this.title = title;
         this.ownerId = ownerId;
     }
+
+    public String toString() {
+        return title;
+    }
 }

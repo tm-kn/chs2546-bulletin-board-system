@@ -15,4 +15,36 @@ public class BulletinBoardClientManager {
     public void authenticateUser(String username) {
         this.username = username;
     }
+
+    public Topic[] getTopicList() {
+        return new Topic[]{
+            new Topic("Test topic 1", 12),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+            new Topic("Test topic 2", 1),
+        };
+    }
 }

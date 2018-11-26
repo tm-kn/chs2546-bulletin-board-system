@@ -49,6 +49,9 @@ class LoginScreen extends JFrame {
 
         cp.add(usernamePanel, "North");
         cp.add(loginButtonPanel, "South");
+
+        pack();
+        setLocationRelativeTo(null);
     }
 
     public void setOnLoginEventListener(EventListener onLogin) {
