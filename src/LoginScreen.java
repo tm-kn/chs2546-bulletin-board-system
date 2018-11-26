@@ -39,13 +39,13 @@ class LoginScreen extends JFrame {
         getRootPane().setDefaultButton(loginButton);
         loginButtonPanel.add(loginButton);
 
-		loginButton.addActionListener (new java.awt.event.ActionListener () {
+		loginButton.addActionListener(new java.awt.event.ActionListener () {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
                 usernameTextField.setEditable(false);
                 manager.authenticateUser(usernameTextField.getText());
                 onLogin.onEvent();
 			}
-		}  );
+		});
 
         cp.add(usernamePanel, "North");
         cp.add(loginButtonPanel, "South");

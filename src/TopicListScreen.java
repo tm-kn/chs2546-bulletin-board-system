@@ -12,7 +12,6 @@ public class TopicListScreen extends JFrame {
         this.manager = manager;
         createGUI();
         refreshData();
-        pack();
     }
 
     private void createGUI() {
@@ -24,7 +23,6 @@ public class TopicListScreen extends JFrame {
 			}
 		});
 
-
 		Container cp = getContentPane();
 		cp.setLayout (new BorderLayout ());
 
@@ -32,7 +30,8 @@ public class TopicListScreen extends JFrame {
         createSouthPanel();
 
         setLocationRelativeTo(null);
-        setState(Frame.NORMAL);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(screenSize.width/2, screenSize.height/2);
     }
 
     private void createWestPanel() {
@@ -59,6 +58,13 @@ public class TopicListScreen extends JFrame {
         JPanel southPanel = new JPanel();
 
         JButton topicJButton = new JButton("New topic");
+        topicJButton.addActionListener(new java.awt.event.ActionListener () {
+			public void actionPerformed (java.awt.event.ActionEvent evt) {
+                NewTopicScreen newTopicScreen = new NewTopicScreen(manager);
+                newTopicScreen.setLocationRelativeTo(TopicListScreen.this);
+                newTopicScreen.setVisible(true);
+			}
+		});
 
         southPanel.add(topicJButton);
 
