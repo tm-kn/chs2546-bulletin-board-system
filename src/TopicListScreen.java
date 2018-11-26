@@ -47,8 +47,29 @@ public class TopicListScreen extends JFrame {
         topicJPanel.add(topicJScrollPane);
         topicJPanel.setBorder(topicBorder);
 
+        JButton openTopicJButton = new JButton("Open topic");
+        openTopicJButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed (java.awt.event.ActionEvent evt) {
+                Topic selectedTopic = (Topic) topicJList.getSelectedValue();
+
+                if (selectedTopic == null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "You need to select topic first",
+                        "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+
+                TopicScreen topicScreen = new TopicScreen(manager, selectedTopic);
+                topicScreen.setVisible(true);
+            }
+        });
+
         JPanel westPanel = new JPanel();
         westPanel.add(topicJPanel);
+        westPanel.add(openTopicJButton);
 
 		Container cp = getContentPane();
         cp.add(westPanel, "West");
@@ -58,7 +79,7 @@ public class TopicListScreen extends JFrame {
         JPanel southPanel = new JPanel();
 
         JButton topicJButton = new JButton("New topic");
-        topicJButton.addActionListener(new java.awt.event.ActionListener () {
+        topicJButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
                 NewTopicScreen newTopicScreen = new NewTopicScreen(manager);
                 newTopicScreen.setLocationRelativeTo(TopicListScreen.this);
