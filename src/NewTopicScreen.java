@@ -39,6 +39,27 @@ public class NewTopicScreen extends JFrame {
         centerPanel.add(contentPanel);
 
         JButton newTopicJButton = new JButton("Submit");
+        newTopicJButton.addActionListener(new java.awt.event.ActionListener () {
+			public void actionPerformed (java.awt.event.ActionEvent evt) {
+                Topic createdTopic = manager.addNewTopic(
+                    titleJTextField.getText(),
+                    contentJTextArea.getText()
+                );
+                if (createdTopic == null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "Could not add the topic (unknown error). Please try again.",
+                        "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                TopicScreen topicScreen = new TopicScreen(manager, createdTopic);
+                topicScreen.setVisible(true);
+                topicScreen.setLocationRelativeTo(NewTopicScreen.this);
+                dispose();
+			}
+		});
 
         JPanel southPanel = new JPanel();
         southPanel.add(newTopicJButton);

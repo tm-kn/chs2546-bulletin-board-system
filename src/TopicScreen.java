@@ -20,5 +20,6 @@ public class TopicScreen extends JFrame {
         JLabel titleJLabel = new JLabel(topic.toString());
         centerPanel.add(titleJLabel);
         cp.add(centerPanel, "Center");
+        pack();
     }
 }
