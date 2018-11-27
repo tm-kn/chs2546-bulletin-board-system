@@ -25,17 +25,61 @@ public class BulletinBoardClientManager {
         return new Topic[]{};
     }
 
-    public int getNewTopicID() {
-        return 0;
+    public TopicLastID getLastTopicID() {
+        TopicLastID template = new TopicLastID();
+        try {
+            TopicLastID lastID = (TopicLastID) javaSpace.readIfExists(
+                template,
+                null,
+                1000
+            );
+            System.out.println(lastID);
+            if (lastID == null) {
+                try {
+                    lastID = new TopicLastID(0);
+                    javaSpace.write(lastID, null, Lease.FOREVER);
+                    System.out.println("Written TopicLastID object.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            return lastID;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Topic addNewTopic(String title, String content) {
-        int id = getNewTopicID();
-        Topic topic = new Topic(id, title, content, getUserId());
+        TopicLastID lastID = getLastTopicID();
+        if (lastID == null) {
+            return null;
+        }
+        try {
+            lastID = (TopicLastID) javaSpace.take(lastID, null, Long.MAX_VALUE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(lastID.lastID);
+        lastID.increment();
+        System.out.println(lastID.lastID);
+        Topic topic = new Topic(lastID.getLastID(), title, content, getUserId());
         try {
             javaSpace.write(topic, null, Lease.FOREVER);
+            System.out.println(
+                "Published topic ID " + String.valueOf(topic.id) + ", " + topic.title
+            );
+            try {
+                javaSpace.write(lastID, null, Lease.FOREVER);
+            } catch(Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         } catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
         return topic;
     }

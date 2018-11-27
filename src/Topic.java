@@ -2,9 +2,9 @@ import net.jini.core.entry.*;
 
 
 public class Topic implements Entry {
-    private Integer id;
-    private String title;
-    private Integer ownerId;
+    public Integer id;
+    public String title;
+    public Integer ownerId;
 
     public Topic() {}
 
