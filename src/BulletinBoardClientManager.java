@@ -26,7 +26,7 @@ public class BulletinBoardClientManager {
     public Topic[] getTopicList() {
         TopicLastID lastID = getLastTopicID();
         List<Topic> topicList = new ArrayList<Topic>();
-        for (int i = lastID.getLastID(); i > 0 ; i--) {
+        for(int i = lastID.getLastID(); i > 0 ; i--) {
             try {
                 Topic topicTemplate = new Topic(i);
                 topicList.add((Topic) javaSpace.read(topicTemplate, null, 1000));
@@ -45,7 +45,7 @@ public class BulletinBoardClientManager {
                 null,
                 1000
             );
-            if (lastID == null) {
+            if(lastID == null) {
                 try {
                     lastID = new TopicLastID(0);
                     javaSpace.write(lastID, null, Lease.FOREVER);
