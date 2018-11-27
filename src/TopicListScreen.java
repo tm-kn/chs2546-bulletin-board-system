@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
@@ -87,15 +89,25 @@ public class TopicListScreen extends JFrame {
 			}
 		});
 
+        JButton refreshJButton = new JButton("Refresh");
+        refreshJButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed (java.awt.event.ActionEvent evt) {
+                TopicListScreen.this.refreshData();
+			}
+		});
+
         southPanel.add(topicJButton);
+        southPanel.add(refreshJButton);
 
 		Container cp = getContentPane();
         cp.add(southPanel, "South");
     }
 
     private void refreshData() {
+        topicJListModel.clear();
         for(Topic topic: manager.getTopicList()) {
             topicJListModel.addElement(topic);
         }
+        System.out.println("Refreshed topic list");
     }
 }

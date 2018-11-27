@@ -45,7 +45,6 @@ public class BulletinBoardClientManager {
                 null,
                 1000
             );
-            System.out.println(lastID);
             if (lastID == null) {
                 try {
                     lastID = new TopicLastID(0);
