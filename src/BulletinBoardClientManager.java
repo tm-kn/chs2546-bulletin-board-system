@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import net.jini.core.lease.*;
 import net.jini.space.JavaSpace;
 
@@ -22,7 +24,17 @@ public class BulletinBoardClientManager {
     }
 
     public Topic[] getTopicList() {
-        return new Topic[]{};
+        TopicLastID lastID = getLastTopicID();
+        List<Topic> topicList = new ArrayList<Topic>();
+        for (int i = lastID.getLastID(); i > 0 ; i--) {
+            try {
+                Topic topicTemplate = new Topic(i);
+                topicList.add((Topic) javaSpace.read(topicTemplate, null, 1000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return topicList.toArray(new Topic[topicList.size()]);
     }
 
     public TopicLastID getLastTopicID() {

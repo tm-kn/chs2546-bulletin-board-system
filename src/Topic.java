@@ -8,6 +8,10 @@ public class Topic implements Entry {
 
     public Topic() {}
 
+    public Topic(int id) {
+        this.id = id;
+    }
+
     public Topic(int id, String title, String content, Integer ownerId) {
         this.id = id;
         this.title = title;
