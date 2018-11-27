@@ -64,7 +64,7 @@ public class BulletinBoardClientManager {
 
     public Topic addNewTopic(String title, String content) {
         TopicLastID lastID = getLastTopicID();
-        if (lastID == null) {
+        if(lastID == null) {
             return null;
         }
         try {
@@ -73,15 +73,19 @@ public class BulletinBoardClientManager {
             e.printStackTrace();
         }
 
-        System.out.println(lastID.lastID);
         lastID.increment();
-        System.out.println(lastID.lastID);
         Topic topic = new Topic(lastID.getLastID(), title, content, getUserId());
         try {
             javaSpace.write(topic, null, Lease.FOREVER);
             System.out.println(
                 "Published topic ID " + String.valueOf(topic.id) + ", " + topic.title
             );
+            try {
+                Post post = new Post(1, topic.id, getUserId(), content);
+            } catch(Exception e) {
+                e.printStackTrace();
+                return null;
+            }
             try {
                 javaSpace.write(lastID, null, Lease.FOREVER);
             } catch(Exception e) {
