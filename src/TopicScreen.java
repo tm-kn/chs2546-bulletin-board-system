@@ -15,15 +15,17 @@ public class TopicScreen extends JFrame {
         this.manager = manager;
         this.topic = topic;
         createGUI();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                refreshData();
-            }
-        });
+    }
+
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        refreshData();
     }
 
     private void createGUI() {
         setTopicTitle(topic.toString());
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         Container cp = getContentPane();
         JPanel centerPanel = new JPanel();
@@ -70,10 +72,17 @@ public class TopicScreen extends JFrame {
                 TopicScreen.this.refreshData();
             }
         };
-
         if (newPostScreen == null) {
             newPostScreen = new NewPostScreen(manager, topic, onResponseSubmit);
         }
+
+        newPostScreen.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                newPostScreen = null;
+            }
+        });
+
         newPostScreen.setVisible(true);
         newPostScreen.setLocationRelativeTo(this);
     }

@@ -8,6 +8,7 @@ import javax.swing.border.TitledBorder;
 public class TopicListScreen extends JFrame {
     private BulletinBoardClientManager manager;
     private DefaultListModel<Topic> topicJListModel = new DefaultListModel<Topic>();
+    private JButton refreshJButton;
 
     TopicListScreen(BulletinBoardClientManager manager) {
         this.manager = manager;
@@ -99,13 +100,18 @@ public class TopicListScreen extends JFrame {
         JButton topicJButton = new JButton("New topic");
         topicJButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
-                NewTopicScreen newTopicScreen = new NewTopicScreen(manager);
+                EventListener onTopicSubmit = new EventListener() {
+                    public void onEvent() {
+                        TopicListScreen.this.refreshData();
+                    }
+                };
+                NewTopicScreen newTopicScreen = new NewTopicScreen(manager, onTopicSubmit);
                 newTopicScreen.setLocationRelativeTo(TopicListScreen.this);
                 newTopicScreen.setVisible(true);
 			}
 		});
 
-        JButton refreshJButton = new JButton("Refresh");
+        refreshJButton = new JButton("Refresh");
         refreshJButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
                 TopicListScreen.this.refreshData();
@@ -120,10 +126,12 @@ public class TopicListScreen extends JFrame {
     }
 
     private void refreshData() {
+        refreshJButton.setEnabled(false);
         topicJListModel.clear();
         for(Topic topic: manager.getTopicList()) {
             topicJListModel.addElement(topic);
         }
+        refreshJButton.setEnabled(true);
         System.out.println("Refreshed topic list");
     }
 }

@@ -18,6 +18,8 @@ public class NewPostScreen extends JFrame {
     private void createGUI() {
 		setTitle("Reply: " + topic.title);
 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
@@ -51,12 +53,26 @@ public class NewPostScreen extends JFrame {
                 }
 
                 onResponseSubmit.onEvent();
-                dispose();
+                dispatchEvent(new java.awt.event.WindowEvent(
+                    NewPostScreen.this,
+                    java.awt.event.WindowEvent.WINDOW_CLOSING
+                ));
 			}
 		});
 
+        JButton cancelJButton = new JButton("Cancel");
+        cancelJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NewPostScreen.this.dispatchEvent(new java.awt.event.WindowEvent(
+                    NewPostScreen.this,
+                    java.awt.event.WindowEvent.WINDOW_CLOSING
+                ));
+            }
+        });
+
         JPanel southPanel = new JPanel();
         southPanel.add(replyJButton);
+        southPanel.add(cancelJButton);
 
         Container cp = getContentPane();
         cp.add(centerPanel, "Center");

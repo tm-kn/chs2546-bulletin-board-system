@@ -5,14 +5,18 @@ import javax.swing.border.TitledBorder;
 
 public class NewTopicScreen extends JFrame {
     private BulletinBoardClientManager manager;
+    private EventListener onTopicSubmit;
 
-    public NewTopicScreen(BulletinBoardClientManager manager) {
+    public NewTopicScreen(BulletinBoardClientManager manager, EventListener onTopicSubmit) {
         this.manager = manager;
+        this.onTopicSubmit = onTopicSubmit;
         createGUI();
     }
 
     private void createGUI() {
 		setTitle("New Topic");
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
@@ -54,10 +58,15 @@ public class NewTopicScreen extends JFrame {
                     );
                     return;
                 }
+                onTopicSubmit.onEvent();
                 TopicScreen topicScreen = new TopicScreen(manager, createdTopic);
                 topicScreen.setVisible(true);
                 topicScreen.setLocationRelativeTo(NewTopicScreen.this);
-                dispose();
+
+                dispatchEvent(new java.awt.event.WindowEvent(
+                    NewTopicScreen.this,
+                    java.awt.event.WindowEvent.WINDOW_CLOSING
+                ));
 			}
 		});
 
