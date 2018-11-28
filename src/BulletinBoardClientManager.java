@@ -183,7 +183,7 @@ public class BulletinBoardClientManager {
             }
             List<Post> postList = new ArrayList<Post>();
 
-            for(int i = 1; i <= topic.getLastPostID(); i++) {
+            for(int i = 0; i <= topic.getLastPostID(); i++) {
                 try {
                     Post postTemplate = new Post(i, topic.id);
                     postList.add((Post) javaSpace.read(postTemplate, null, 1000));

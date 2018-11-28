@@ -37,6 +37,18 @@ public class TopicListScreen extends JFrame {
 
     private void createWestPanel() {
         JList topicJList = new JList(topicJListModel);
+
+        topicJList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                JList list = (JList) evt.getSource();
+                if (evt.getClickCount() == 2) {
+                    int index = list.locationToIndex(evt.getPoint());
+                    Topic selectedTopic = (Topic) list.getModel().getElementAt(index);
+                    TopicListScreen.this.createTopicScreen(selectedTopic);
+                }
+            }
+        });
+
         JScrollPane topicJScrollPane = new JScrollPane(topicJList);
         topicJScrollPane.setMinimumSize (new Dimension (1000,200));
 
@@ -63,8 +75,7 @@ public class TopicListScreen extends JFrame {
                     return;
                 }
 
-                TopicScreen topicScreen = new TopicScreen(manager, selectedTopic);
-                topicScreen.setVisible(true);
+                TopicListScreen.this.createTopicScreen(selectedTopic);
             }
         });
 
@@ -74,6 +85,12 @@ public class TopicListScreen extends JFrame {
 
 		Container cp = getContentPane();
         cp.add(westPanel, "West");
+    }
+
+    private TopicScreen createTopicScreen(Topic topic) {
+        TopicScreen topicScreen = new TopicScreen(manager, topic);
+        topicScreen.setVisible(true);
+        return topicScreen;
     }
 
     private void createSouthPanel() {
