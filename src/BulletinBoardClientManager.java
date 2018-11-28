@@ -37,7 +37,10 @@ public class BulletinBoardClientManager {
         for(int i = lastID.getLastID(); i > 0 ; i--) {
             try {
                 Topic topicTemplate = new Topic(i);
-                topicList.add((Topic) javaSpace.read(topicTemplate, null, 1000));
+                Topic topic = (Topic) javaSpace.read(topicTemplate, null, 1000);
+                if (topic != null) {
+                    topicList.add(topic);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -186,8 +189,10 @@ public class BulletinBoardClientManager {
             for(int i = 0; i <= topic.getLastPostID(); i++) {
                 try {
                     Post postTemplate = new Post(i, topic.id);
-                    postList.add((Post) javaSpace.read(postTemplate, null, 1000));
-                    System.out.println(postList);
+                    Post post = (Post) javaSpace.read(postTemplate, null, 1000);
+                    if (post != null) {
+                        postList.add(post);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
