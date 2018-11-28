@@ -8,7 +8,6 @@ import javax.swing.border.TitledBorder;
 public class TopicListScreen extends JFrame {
     private BulletinBoardClientManager manager;
     private DefaultListModel<Topic> topicJListModel = new DefaultListModel<Topic>();
-    private Topic[] topicList = {};
 
     TopicListScreen(BulletinBoardClientManager manager) {
         this.manager = manager;

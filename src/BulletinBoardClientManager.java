@@ -12,10 +12,10 @@ public class BulletinBoardClientManager {
         return 1;
     }
 
-    public void connectToJavaSpace() {
+    public void connectToJavaSpace() throws Exception {
 		javaSpace = SpaceUtils.getSpace();
 		if (javaSpace == null){
-            throw new JavaSpaceNotFoundException();
+            throw new Exception("Java space not found");
 		}
     }
 
@@ -80,8 +80,9 @@ public class BulletinBoardClientManager {
             System.out.println(
                 "Published topic ID " + String.valueOf(topic.id) + ", " + topic.title
             );
+            Post post = new Post(1, topic.id, getUserId(), content);
             try {
-                Post post = new Post(1, topic.id, getUserId(), content);
+                javaSpace.write(post, null, Lease.FOREVER);
             } catch(Exception e) {
                 e.printStackTrace();
                 return null;
@@ -92,6 +93,30 @@ public class BulletinBoardClientManager {
                 e.printStackTrace();
                 return null;
             }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return topic;
+    }
+
+    public Topic getTopicOfID(int id) {
+        Topic topic = new Topic(id);
+        try {
+            topic = (Topic) javaSpace.read(topic, null, 1000);
+            List<Post> postList = new ArrayList<Post>();
+
+            for(int i = 1; i <= topic.getLastPostID(); i++) {
+                try {
+                    Post postTemplate = new Post(i, topic.id);
+                    postList.add((Post) javaSpace.read(postTemplate, null, 1000));
+                    System.out.println(postList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            topic.setPostList(postList.toArray(new Post[postList.size()]));
         } catch(Exception e) {
             e.printStackTrace();
             return null;
