@@ -9,6 +9,7 @@ public class TopicScreen extends JFrame {
     private JLabel titleJLabel = new JLabel("Topic");
     private JButton refreshJButton;
     private JPanel postListPanel = new JPanel();
+    private NewPostScreen newPostScreen;
 
     public TopicScreen(BulletinBoardClientManager manager, Topic topic) {
         this.manager = manager;
@@ -43,7 +44,15 @@ public class TopicScreen extends JFrame {
             }
         });
 
+        JButton replyJButton = new JButton("Reply");
+        replyJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TopicScreen.this.openReplyWindow();
+            }
+        });
+
         southPanel.add(refreshJButton);
+        southPanel.add(replyJButton);
 
         cp.add(southPanel, "South");
         pack();
@@ -55,6 +64,20 @@ public class TopicScreen extends JFrame {
         titleJLabel.setText(title);
     }
 
+    private void openReplyWindow() {
+        EventListener onResponseSubmit = new EventListener() {
+            public void onEvent() {
+                TopicScreen.this.refreshData();
+            }
+        };
+
+        if (newPostScreen == null) {
+            newPostScreen = new NewPostScreen(manager, topic, onResponseSubmit);
+        }
+        newPostScreen.setVisible(true);
+        newPostScreen.setLocationRelativeTo(this);
+    }
+
 
     private void updatePostList() {
         postListPanel.removeAll();
@@ -62,6 +85,8 @@ public class TopicScreen extends JFrame {
             JLabel postContent = new JLabel(post.content);
             postListPanel.add(postContent);
         }
+        postListPanel.revalidate();
+        postListPanel.repaint();
     }
 
     private void refreshData() {

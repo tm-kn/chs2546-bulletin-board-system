@@ -5,7 +5,7 @@ public class Topic implements Entry {
     public Integer id;
     public String title;
     public Integer ownerId;
-    public Integer lastPostID = 1;
+    public Integer lastPostID;
     private Post[] postList;
 
     public Topic() {}
@@ -26,6 +26,10 @@ public class Topic implements Entry {
 
     public void incrementLastPostID() {
         lastPostID++;
+    }
+
+    public void setLastPostID(int lastPostID) {
+        this.lastPostID = lastPostID;
     }
 
     public String toString() {

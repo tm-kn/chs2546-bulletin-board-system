@@ -56,7 +56,7 @@ public class SpaceUtils {
 	}
 
 	public static TransactionManager getManager() {
-		return getManager("waterloo");
+		return getManager("localhost");
 	}
 }
 
