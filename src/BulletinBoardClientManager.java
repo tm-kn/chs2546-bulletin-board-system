@@ -8,7 +8,7 @@ import net.jini.core.transaction.server.*;
 
 public class BulletinBoardClientManager {
     private JavaSpace javaSpace;
-    private String username;
+    private User user;
     private TransactionManager transactionManager;
 
     public int getUserId() {
@@ -28,7 +28,10 @@ public class BulletinBoardClientManager {
     }
 
     public void authenticateUser(String username) {
-        this.username = username;
+    }
+
+    public void createUser(String username, String password) {
+
     }
 
     public Topic[] getTopicList() {
