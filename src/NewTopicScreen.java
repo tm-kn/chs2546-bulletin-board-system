@@ -59,7 +59,7 @@ public class NewTopicScreen extends JFrame {
                     return;
                 }
                 onTopicSubmit.onEvent();
-                TopicScreen topicScreen = new TopicScreen(manager, createdTopic);
+                TopicScreen topicScreen = new TopicScreen(manager, createdTopic, null);
                 topicScreen.setVisible(true);
                 topicScreen.setLocationRelativeTo(NewTopicScreen.this);
 

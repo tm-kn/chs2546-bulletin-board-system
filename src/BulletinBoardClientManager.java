@@ -38,7 +38,7 @@ public class BulletinBoardClientManager {
             try {
                 Topic topicTemplate = new Topic(i);
                 Topic topic = (Topic) javaSpace.read(topicTemplate, null, 1000);
-                if (topic != null) {
+                if (topic != null && !topic.isDeleted()) {
                     topicList.add(topic);
                 }
             } catch (Exception e) {
@@ -56,6 +56,7 @@ public class BulletinBoardClientManager {
                 transaction,
                 1000
             );
+
             if(lastID == null) {
                 try {
                     lastID = new TopicLastID(0);
@@ -66,6 +67,7 @@ public class BulletinBoardClientManager {
                     return null;
                 }
             }
+
             return lastID;
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,10 +87,12 @@ public class BulletinBoardClientManager {
         Transaction transaction = trc.transaction;
 
         TopicLastID lastID = getLastTopicID(transaction);
+
         if(lastID == null) {
             System.out.println("Can't get last topic id object");
             System.exit(1);
         }
+
         try {
             lastID = (TopicLastID) javaSpace.take(lastID, transaction, Lease.FOREVER);
         } catch (Exception e) {
@@ -97,6 +101,7 @@ public class BulletinBoardClientManager {
 
         lastID.increment();
         Topic topic = new Topic(lastID.getLastID(), title, content, getUserId());
+
         try {
             topic.setLastPostID(0);
             javaSpace.write(topic, transaction, Lease.FOREVER);
@@ -120,6 +125,7 @@ public class BulletinBoardClientManager {
             e.printStackTrace();
             return null;
         }
+
         try {
             transaction.commit();
             System.out.println("Transaction commited");
@@ -127,11 +133,13 @@ public class BulletinBoardClientManager {
             e.printStackTrace();
             return null;
         }
+
         return topic;
     }
 
     public Post addNewPost(int topicID, String content) {
         Transaction.Created trc;
+
         try {
              trc = TransactionFactory.create(transactionManager, 5000);
         } catch (Exception e) {
@@ -165,6 +173,7 @@ public class BulletinBoardClientManager {
             }
             return null;
         }
+
         try {
             transaction.commit();
             System.out.println("Commited transaction");
@@ -172,37 +181,107 @@ public class BulletinBoardClientManager {
             System.out.println("Could not commit transaction");
             e.printStackTrace();
         }
+
         return post;
     }
 
     public Topic getTopicOfID(int id) {
         System.out.println("Get topic ID " + id);
         Topic topic = new Topic(id);
+
         try {
             topic = (Topic) javaSpace.read(topic, null, 1000);
+
             if (topic == null) {
                 System.out.println("Can't find the topic of that ID: " + id);
                 return null;
             }
-            List<Post> postList = new ArrayList<Post>();
 
-            for(int i = 0; i <= topic.getLastPostID(); i++) {
-                try {
-                    Post postTemplate = new Post(i, topic.id);
-                    Post post = (Post) javaSpace.read(postTemplate, null, 1000);
-                    if (post != null) {
-                        postList.add(post);
+            if (!topic.isDeleted()) {
+                List<Post> postList = new ArrayList<Post>();
+
+                for(int i = 0; i <= topic.getLastPostID(); i++) {
+                    try {
+                        Post postTemplate = new Post(i, topic.id);
+                        Post post = (Post) javaSpace.read(postTemplate, null, 1000);
+
+                        if (post != null) {
+                            postList.add(post);
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+
+                topic.setPostList(postList.toArray(new Post[postList.size()]));
             }
 
-            topic.setPostList(postList.toArray(new Post[postList.size()]));
         } catch(Exception e) {
             e.printStackTrace();
+
             return null;
         }
+
         return topic;
+    }
+
+    public Boolean deleteTopic(int topicID) throws Exception {
+        Transaction.Created trc;
+        try {
+             trc = TransactionFactory.create(transactionManager, 3000);
+        } catch (Exception e) {
+             System.out.println("Could not create transaction " + e);
+
+             return null;
+        }
+
+        Transaction transaction = trc.transaction;
+        Topic topic;
+        try {
+            topic = (Topic) javaSpace.take(new Topic(topicID), transaction, 10000);
+            System.out.println("Deleted topic " + topicID);
+        } catch(Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+        if (getUserId() != topic.ownerId) {
+            transaction.abort();
+            throw new Exception("You must be an owner of a topic to delete it");
+        }
+
+        topic.setDeleted();
+
+        try {
+            javaSpace.write(topic, transaction, Lease.FOREVER);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+        Post post;
+
+        do {
+            post = (Post) javaSpace.take(new Post(topicID), transaction, 1000);
+
+            if (post != null) {
+                System.out.println("Deleted post " + post.id + " of topic " + topicID);
+            }
+        } while(post != null);
+
+        try {
+            transaction.commit();
+            System.out.println("Transaction commited");
+        } catch(Exception e) {
+            System.out.println("Transaction not commited");
+            e.printStackTrace();
+
+            return null;
+        }
+
+        return true;
     }
 }

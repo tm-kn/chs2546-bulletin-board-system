@@ -8,12 +8,15 @@ public class TopicScreen extends JFrame {
     private Topic topic;
     private JLabel titleJLabel = new JLabel("Topic");
     private JButton refreshJButton;
+    private JButton deleteJButton;
     private JPanel postListPanel = new JPanel();
     private NewPostScreen newPostScreen;
+    private EventListener onTopicDelete;
 
-    public TopicScreen(BulletinBoardClientManager manager, Topic topic) {
+    public TopicScreen(BulletinBoardClientManager manager, Topic topic, EventListener onTopicDelete) {
         this.manager = manager;
         this.topic = topic;
+        this.onTopicDelete = onTopicDelete;
         createGUI();
     }
 
@@ -53,8 +56,64 @@ public class TopicScreen extends JFrame {
             }
         });
 
+
+        deleteJButton = new JButton("Delete");
+        deleteJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                int dialogResult = JOptionPane.showConfirmDialog (
+                    null,
+                    "Do you want to delete the topic?",
+                    "Warning",
+                    JOptionPane.YES_NO_OPTION
+                );
+                if(dialogResult != JOptionPane.YES_OPTION){
+                    return;
+                }
+                try {
+                    if (!manager.deleteTopic(topic.id)) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Something went wrong.",
+                            "Bulletin Board",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "Something went wrong.",
+                        "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Topic deleted",
+                            "Bulletin Board",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                });
+
+
+                if (onTopicDelete != null) {
+                    onTopicDelete.onEvent();
+                }
+                dispatchEvent(new java.awt.event.WindowEvent(
+                    TopicScreen.this,
+                    java.awt.event.WindowEvent.WINDOW_CLOSING
+                ));
+            }
+        });
+
         southPanel.add(refreshJButton);
         southPanel.add(replyJButton);
+        southPanel.add(deleteJButton);
+        deleteJButton.setVisible(false);
 
         cp.add(southPanel, "South");
         pack();
@@ -111,6 +170,12 @@ public class TopicScreen extends JFrame {
             return;
         }
         topic = returnedTopic;
+
+        if (topic.ownerId == manager.getUserId()) {
+            deleteJButton.setVisible(true);
+        } else {
+            deleteJButton.setVisible(false);
+        }
 
         updatePostList();
 

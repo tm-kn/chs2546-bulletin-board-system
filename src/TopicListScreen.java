@@ -89,7 +89,13 @@ public class TopicListScreen extends JFrame {
     }
 
     private TopicScreen createTopicScreen(Topic topic) {
-        TopicScreen topicScreen = new TopicScreen(manager, topic);
+        EventListener onDelete = new EventListener() {
+            public void onEvent() {
+                refreshData();
+            }
+        };
+
+        TopicScreen topicScreen = new TopicScreen(manager, topic, onDelete);
         topicScreen.setVisible(true);
         return topicScreen;
     }

@@ -13,6 +13,10 @@ public class Post implements Entry {
         this.topicID = topicID;
     }
 
+    public Post(int topicID) {
+        this.topicID = topicID;
+    }
+
     public Post(int id, int topicID, int authorID, String content) {
         this.id = id;
         this.topicID = topicID;
