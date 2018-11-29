@@ -68,7 +68,7 @@ public class TopicListScreen extends JFrame {
 
                 if (selectedTopic == null) {
                     JOptionPane.showMessageDialog(
-                        null,
+                        TopicListScreen.this,
                         "You need to select topic first",
                         "Bulletin Board",
                         JOptionPane.ERROR_MESSAGE

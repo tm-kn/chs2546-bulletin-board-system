@@ -61,7 +61,7 @@ public class TopicScreen extends JFrame {
         deleteJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 int dialogResult = JOptionPane.showConfirmDialog (
-                    null,
+                    TopicScreen.this,
                     "Do you want to delete the topic?",
                     "Warning",
                     JOptionPane.YES_NO_OPTION
@@ -72,7 +72,7 @@ public class TopicScreen extends JFrame {
                 try {
                     if (!manager.deleteTopic(topic.id)) {
                         JOptionPane.showMessageDialog(
-                            null,
+                            TopicScreen.this,
                             "Something went wrong.",
                             "Bulletin Board",
                             JOptionPane.ERROR_MESSAGE
@@ -81,7 +81,7 @@ public class TopicScreen extends JFrame {
                 } catch(Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(
-                        null,
+                        TopicScreen.this,
                         "Something went wrong.",
                         "Bulletin Board",
                         JOptionPane.ERROR_MESSAGE
@@ -164,7 +164,7 @@ public class TopicScreen extends JFrame {
         refreshJButton.setEnabled(true);
         if (returnedTopic == null) {
             JOptionPane.showMessageDialog(
-                null, "Can't load the topic.", "Bulletin Board",
+                TopicScreen.this, "Can't load the topic.", "Bulletin Board",
                 JOptionPane.ERROR_MESSAGE
             );
             return;

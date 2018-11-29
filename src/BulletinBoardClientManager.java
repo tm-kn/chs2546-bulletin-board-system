@@ -11,8 +11,28 @@ public class BulletinBoardClientManager {
     private User user;
     private TransactionManager transactionManager;
 
+    public User getUserOfId(int id) {
+        try {
+            return (User) javaSpace.read(new User(id), null, 1000);
+        } catch(Exception e) {
+            System.out.println("Cannot obtain user of id " + id);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void refreshUser() {
+        User user = getUserOfId(this.user.id);
+        if (user == null) {
+            System.out.println("User not authenticated.");
+            System.exit(1);
+        }
+        this.user = user;
+    }
+
     public int getUserId() {
-        return 1;
+        refreshUser();
+        return user.id;
     }
 
     public void connectToJavaSpace() throws Exception {
@@ -27,7 +47,27 @@ public class BulletinBoardClientManager {
         }
     }
 
-    public void authenticateUser(String username) {
+    public boolean authenticateUser(String username, String password) {
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            User user = (User) javaSpace.read(new User(username), null, 1000);
+        } catch(Exception e) {
+            System.out.println("Cannot find user");
+            e.printStackTrace();
+            return false;
+        }
+
+        if (user == null) {
+            return false;
+        }
+
+        if (user.comparePassword(password)) {
+            this.user = user;
+            return true;
+        }
+        return false;
     }
 
     public void createUser(String username, String password) {

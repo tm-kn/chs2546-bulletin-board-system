@@ -15,8 +15,16 @@ public class User implements Entry {
 
     public User() {}
 
+    public User(int id) {
+        this.id = id;
+    }
+
     public User(String username) {
         this.username = username;
+    }
+
+    public String toString() {
+        return username;
     }
 
     public void setPassword(String plainTextPassword) {
@@ -24,8 +32,9 @@ public class User implements Entry {
         System.out.println(password);
     }
 
-    public boolean comparePassword(String password) {
-        return false;
+    public boolean comparePassword(String plainTextPassword) {
+        return hashPassword(plainTextPassword) == password;
+
     }
 
     private void generateSalt(int length) {
