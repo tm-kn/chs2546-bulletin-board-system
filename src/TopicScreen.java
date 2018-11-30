@@ -158,6 +158,9 @@ public class TopicScreen extends JFrame {
             User author = manager.getUserOfId(post.authorID);
             postPanel.add(new JLabel(author.username));
             postPanel.add(new JLabel(post.datetime.toString()));
+            if (post.isPrivate) {
+                postPanel.add(new JLabel("(private)"));
+            }
             postListPanel.add(postPanel);
         }
         postListPanel.revalidate();
