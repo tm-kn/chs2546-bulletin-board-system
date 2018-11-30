@@ -35,12 +35,23 @@ public class NewPostScreen extends JFrame {
 
         centerPanel.add(contentPanel);
 
+        JPanel privateCheckboxPanel = new JPanel();
+        privateCheckboxPanel.setLayout(new FlowLayout());
+
+        privateCheckboxPanel.add(new JLabel("Private (visible to you and topic owner"));
+
+        JCheckBox privateJCheckBox = new JCheckBox();
+        privateCheckboxPanel.add(privateJCheckBox);
+
+        centerPanel.add(privateCheckboxPanel);
+
         JButton replyJButton = new JButton("Submit a reply");
         replyJButton.addActionListener(new java.awt.event.ActionListener () {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
                 Post createdPost = manager.addNewPost(
                     topic.id,
-                    contentJTextArea.getText()
+                    contentJTextArea.getText(),
+                    privateJCheckBox.isSelected()
                 );
                 if (createdPost == null) {
                     JOptionPane.showMessageDialog(

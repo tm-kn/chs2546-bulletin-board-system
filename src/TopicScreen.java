@@ -178,7 +178,7 @@ public class TopicScreen extends JFrame {
         }
         topic = returnedTopic;
 
-        if (topic.ownerId == manager.getUserId()) {
+        if (topic.ownerId.equals(manager.getUserId())) {
             deleteJButton.setVisible(true);
         } else {
             deleteJButton.setVisible(false);

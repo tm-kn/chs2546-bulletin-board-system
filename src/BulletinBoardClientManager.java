@@ -244,6 +244,7 @@ public class BulletinBoardClientManager {
             );
             Post post = new Post(0, topic.id, getUserId(), content);
             post.setCurrentDateTime();
+            post.setPublic();
             try {
                 javaSpace.write(post, transaction, Lease.FOREVER);
             } catch(Exception e) {
@@ -272,7 +273,7 @@ public class BulletinBoardClientManager {
         return topic;
     }
 
-    public Post addNewPost(int topicID, String content) {
+    public Post addNewPost(int topicID, String content, boolean isPrivate) {
         Transaction.Created trc;
 
         try {
@@ -292,6 +293,12 @@ public class BulletinBoardClientManager {
 
             post = new Post(topic.getLastPostID(), topic.id, getUserId(), content);
             post.setCurrentDateTime();
+
+            if (isPrivate) {
+                post.setPrivate();
+            } else {
+                post.setPublic();
+            }
 
             javaSpace.write(topic, transaction, Lease.FOREVER);
             System.out.println("Written topic: " + topic.id + ", " + topic.title + ", last id " + topic.getLastPostID());
@@ -341,9 +348,16 @@ public class BulletinBoardClientManager {
                         Post postTemplate = new Post(i, topic.id);
                         Post post = (Post) javaSpace.read(postTemplate, null, 1000);
 
-                        if (post != null) {
-                            postList.add(post);
+                        if (post == null) {
+                            continue;
                         }
+
+                        // Skip private posts.
+                        if (post.isPrivate && !topic.ownerId.equals(this.user.id) && !post.authorID.equals(this.user.id)) {
+                            continue;
+                        }
+
+                        postList.add(post);
 
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -8,6 +8,7 @@ public class Post implements Entry {
     public Integer authorID;
     public String content;
     public Date datetime;
+    public Boolean isPrivate;
 
     public Post() {}
 
@@ -25,6 +26,14 @@ public class Post implements Entry {
         this.topicID = topicID;
         this.authorID = authorID;
         this.content = content;
+    }
+
+    public void setPrivate() {
+        isPrivate = true;
+    }
+
+    public void setPublic() {
+        isPrivate = false;
     }
 
     public void setCurrentDateTime() {
