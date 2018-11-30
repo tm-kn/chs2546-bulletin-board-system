@@ -153,6 +153,7 @@ public class BulletinBoardClientManager {
             lastID.increment();
             User user = new User(lastID.getLastID(), username);
             user.setPassword(password);
+            user.setCurrentJoinedAtDate();
             javaSpace.write(user, transaction, Lease.FOREVER);
             javaSpace.write(lastID, transaction, Lease.FOREVER);
             transaction.commit();

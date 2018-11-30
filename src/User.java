@@ -2,6 +2,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 import net.jini.core.entry.*;
 
@@ -11,6 +12,7 @@ public class User implements Entry {
     public String username;
     public String password;
     public String salt;
+    public Date joinedAt;
     private char[] charList;
 
     public User() {}
@@ -82,5 +84,9 @@ public class User implements Entry {
             e.printStackTrace();
             throw new RuntimeException("Cannot decode password from UTF-8");
         }
+    }
+
+    public void setCurrentJoinedAtDate() {
+        joinedAt = new Date();
     }
 }
