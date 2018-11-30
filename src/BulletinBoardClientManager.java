@@ -241,6 +241,7 @@ public class BulletinBoardClientManager {
                 "Published topic ID " + String.valueOf(topic.id) + ", " + topic.title
             );
             Post post = new Post(0, topic.id, getUserId(), content);
+            post.setCurrentDateTime();
             try {
                 javaSpace.write(post, transaction, Lease.FOREVER);
             } catch(Exception e) {
@@ -288,6 +289,7 @@ public class BulletinBoardClientManager {
             topic.incrementLastPostID();
 
             post = new Post(topic.getLastPostID(), topic.id, getUserId(), content);
+            post.setCurrentDateTime();
 
             javaSpace.write(topic, transaction, Lease.FOREVER);
             System.out.println("Written topic: " + topic.id + ", " + topic.title + ", last id " + topic.getLastPostID());

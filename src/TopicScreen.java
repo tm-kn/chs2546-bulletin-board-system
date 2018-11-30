@@ -35,6 +35,7 @@ public class TopicScreen extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
         centerPanel.add(titleJLabel);
 
+        postListPanel.setLayout(new BoxLayout(postListPanel, BoxLayout.PAGE_AXIS));
         centerPanel.add(postListPanel);
 
         cp.add(centerPanel, "Center");
@@ -152,8 +153,12 @@ public class TopicScreen extends JFrame {
     private void updatePostList() {
         postListPanel.removeAll();
         for(Post post: topic.getPostList()) {
-            JLabel postContent = new JLabel(post.content);
-            postListPanel.add(postContent);
+            JPanel postPanel = new JPanel();
+            postPanel.add(new Label(post.content));
+            User author = manager.getUserOfId(post.authorID);
+            postPanel.add(new JLabel(author.username));
+            postPanel.add(new JLabel(post.datetime.toString()));
+            postListPanel.add(postPanel);
         }
         postListPanel.revalidate();
         postListPanel.repaint();
