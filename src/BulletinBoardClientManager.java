@@ -233,6 +233,7 @@ public class BulletinBoardClientManager {
 
         lastID.increment();
         Topic topic = new Topic(lastID.getLastID(), title, content, getUserId());
+        topic.setCurrentDateTime();
 
         try {
             topic.setLastPostID(0);

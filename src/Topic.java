@@ -1,4 +1,5 @@
 import net.jini.core.entry.*;
+import java.util.Date;
 
 
 public class Topic implements Entry {
@@ -7,6 +8,7 @@ public class Topic implements Entry {
     public Integer ownerId;
     public Integer lastPostID;
     public Boolean deleted;
+    public Date datetime;
     private Post[] postList;
 
     public Topic() {}
@@ -60,5 +62,9 @@ public class Topic implements Entry {
         lastPostID = null;
         title = null;
         ownerId = null;
+    }
+
+    public void setCurrentDateTime() {
+        datetime = new Date();
     }
 }
