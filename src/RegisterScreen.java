@@ -60,8 +60,10 @@ class RegisterScreen extends JFrame {
                 passwordTextField.setEditable(false);
                 repeatPasswordTextField.setEditable(false);
                 registerButton.setEnabled(false);
+                String username = usernameTextField.getText();
+                String password = passwordTextField.getText();
 
-                boolean passwordsMatch = passwordTextField.getText().equals(
+                boolean passwordsMatch = password.equals(
                     repeatPasswordTextField.getText()
                 );
 
@@ -71,6 +73,35 @@ class RegisterScreen extends JFrame {
                         JOptionPane.ERROR_MESSAGE
                     );
 
+                    usernameTextField.setEditable(true);
+                    passwordTextField.setEditable(true);
+                    repeatPasswordTextField.setEditable(true);
+                    registerButton.setEnabled(true);
+                    return;
+                }
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(
+                        RegisterScreen.this,
+                        "Form cannot be empty.",
+                        "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    usernameTextField.setEditable(true);
+                    passwordTextField.setEditable(true);
+                    repeatPasswordTextField.setEditable(true);
+                    registerButton.setEnabled(true);
+                    return;
+
+                }
+
+                if (manager.isUsernameTaken(username, null)) {
+                    JOptionPane.showMessageDialog(
+                        RegisterScreen.this,
+                        "Username \"" + username + "\" is taken.",
+                        "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                     usernameTextField.setEditable(true);
                     passwordTextField.setEditable(true);
                     repeatPasswordTextField.setEditable(true);

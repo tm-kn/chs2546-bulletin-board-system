@@ -110,6 +110,18 @@ public class BulletinBoardClientManager {
         }
     }
 
+    public boolean isUsernameTaken(String username, Transaction transaction) {
+        try {
+            User user = (User) javaSpace.readIfExists(
+                new User(username), transaction, Lease.FOREVER
+            );
+            return user != null;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
     public User createUser(String username, String password) {
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
             return null;
@@ -128,8 +140,13 @@ public class BulletinBoardClientManager {
         Transaction transaction = trc.transaction;
 
         try {
+            if(isUsernameTaken(username, transaction)) {
+                transaction.abort();
+                return null;
+            }
             UserLastID lastID = getLastUserID(transaction);
             if (lastID == null) {
+                transaction.abort();
                 return null;
             }
             lastID = (UserLastID) javaSpace.take(lastID, transaction, 1000);
