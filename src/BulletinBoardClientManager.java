@@ -32,6 +32,7 @@ public class BulletinBoardClientManager {
 
     public int getUserId() {
         refreshUser();
+        System.out.println("Current user ID:" + user.id);
         return user.id;
     }
 
@@ -48,36 +49,107 @@ public class BulletinBoardClientManager {
     }
 
     public boolean authenticateUser(String username, String password) {
+        if (user != null) {
+            throw new RuntimeException("Already authenticated");
+        }
+
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
             return false;
         }
+
+        User user;
+
         try {
-            User user = (User) javaSpace.read(new User(username), null, 1000);
+            user = (User) javaSpace.read(new User(username), null, 1000);
         } catch(Exception e) {
-            System.out.println("Cannot find user");
             e.printStackTrace();
             return false;
         }
 
         if (user == null) {
+            System.out.println("Cannot find user: " + username);
+
             return false;
         }
 
         if (user.comparePassword(password)) {
             this.user = user;
+
             return true;
         }
+
+        System.out.println("Password is incorrect");
+
         return false;
     }
 
-    public void createUser(String username, String password) {
 
+    private UserLastID getLastUserID(Transaction transaction) {
+        UserLastID lastID;
+        try {
+            lastID = (UserLastID) javaSpace.readIfExists(
+                new UserLastID(),
+                transaction,
+                1000
+            );
+
+            if(lastID == null) {
+                try {
+                    lastID = new UserLastID(-1);
+                    javaSpace.write(lastID, transaction, Lease.FOREVER);
+                    System.out.println("Written UserLastID object.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            return lastID;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public User createUser(String username, String password) {
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            return null;
+        }
+
+        Transaction.Created trc;
+
+        try {
+             trc = TransactionFactory.create(transactionManager, 3000);
+        } catch (Exception e) {
+             System.out.println("Could not create transaction " + e);
+
+             return null;
+        }
+
+        Transaction transaction = trc.transaction;
+
+        try {
+            UserLastID lastID = getLastUserID(transaction);
+            if (lastID == null) {
+                return null;
+            }
+            lastID = (UserLastID) javaSpace.take(lastID, transaction, 1000);
+            lastID.increment();
+            User user = new User(lastID.getLastID(), username);
+            user.setPassword(password);
+            javaSpace.write(user, transaction, Lease.FOREVER);
+            javaSpace.write(lastID, transaction, Lease.FOREVER);
+            transaction.commit();
+            return user;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Topic[] getTopicList() {
         TopicLastID lastID = getLastTopicID(null);
         List<Topic> topicList = new ArrayList<Topic>();
-        for(int i = lastID.getLastID(); i > 0 ; i--) {
+        for(int i = lastID.getLastID(); i >= 0 ; i--) {
             try {
                 Topic topicTemplate = new Topic(i);
                 Topic topic = (Topic) javaSpace.read(topicTemplate, null, 1000);
@@ -102,7 +174,7 @@ public class BulletinBoardClientManager {
 
             if(lastID == null) {
                 try {
-                    lastID = new TopicLastID(0);
+                    lastID = new TopicLastID(-1);
                     javaSpace.write(lastID, transaction, Lease.FOREVER);
                     System.out.println("Written TopicLastID object.");
                 } catch (Exception e) {

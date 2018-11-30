@@ -88,6 +88,7 @@ public class TopicScreen extends JFrame {
                     );
                     return;
                 }
+
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         JOptionPane.showMessageDialog(
@@ -103,6 +104,7 @@ public class TopicScreen extends JFrame {
                 if (onTopicDelete != null) {
                     onTopicDelete.onEvent();
                 }
+
                 dispatchEvent(new java.awt.event.WindowEvent(
                     TopicScreen.this,
                     java.awt.event.WindowEvent.WINDOW_CLOSING

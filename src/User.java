@@ -23,17 +23,22 @@ public class User implements Entry {
         this.username = username;
     }
 
+    public User(int id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
     public String toString() {
         return username;
     }
 
     public void setPassword(String plainTextPassword) {
+        generateSalt();
         password = hashPassword(plainTextPassword);
-        System.out.println(password);
     }
 
     public boolean comparePassword(String plainTextPassword) {
-        return hashPassword(plainTextPassword) == password;
+        return hashPassword(plainTextPassword).equals(password);
 
     }
 
@@ -58,8 +63,7 @@ public class User implements Entry {
         generateSalt(10);
     }
 
-    public String hashPassword(String password) {
-        generateSalt();
+    public String hashPassword(String plainTextPassword) {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-512");
@@ -68,7 +72,7 @@ public class User implements Entry {
             throw new RuntimeException("Hash algorithm not installed.");
         }
         try {
-            byte[] hash = messageDigest.digest((salt + password).getBytes("UTF-8"));
+            byte[] hash = messageDigest.digest((salt + plainTextPassword).getBytes("UTF-8"));
             StringBuilder sb = new StringBuilder(2*hash.length);
             for(byte b : hash){
                 sb.append(String.format("%02x", b&0xff));
