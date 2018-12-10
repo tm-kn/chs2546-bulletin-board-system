@@ -24,8 +24,7 @@ public class NewPostScreen extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
         JPanel contentPanel = new JPanel();
-        TitledBorder contentPanelBorder = new TitledBorder("Content");
-        contentPanel.setBorder(contentPanelBorder);
+        contentPanel.setBorder(new TitledBorder("Content"));
 
         JTextArea contentJTextArea = new JTextArea(30, 50);
         contentJTextArea.setLineWrap(true);
@@ -88,6 +87,7 @@ public class NewPostScreen extends JFrame {
         Container cp = getContentPane();
         cp.add(centerPanel, "Center");
         cp.add(southPanel, "South");
+        setResizable(false);
         pack();
     }
 }

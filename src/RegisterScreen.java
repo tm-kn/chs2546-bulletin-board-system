@@ -154,6 +154,7 @@ class RegisterScreen extends JFrame {
         cp.add(registerButtonPanel, "South");
 
         pack();
+        setResizable(false);
         setLocationRelativeTo(null);
     }
 }

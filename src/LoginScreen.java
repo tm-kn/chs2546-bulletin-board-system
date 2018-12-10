@@ -98,6 +98,7 @@ class LoginScreen extends JFrame {
         cp.add(loginButtonPanel, "South");
 
         pack();
+        setResizable(false);
         setLocationRelativeTo(null);
     }
 

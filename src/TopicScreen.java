@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.border.EmptyBorder;
 
 
 public class TopicScreen extends JFrame {
@@ -30,17 +31,19 @@ public class TopicScreen extends JFrame {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize((int)(screenSize.width/2), (int)(screenSize.height/2));
+        setMinimumSize(new Dimension(700, 400));
+        setResizable(false);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         Container cp = getContentPane();
         JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.add(titleJLabel);
 
         JScrollPane centerPanelScrollable = new JScrollPane(centerPanel);
 
-        postListPanel.setLayout(new BoxLayout(postListPanel, BoxLayout.PAGE_AXIS));
+        postListPanel.setLayout(new BoxLayout(postListPanel, BoxLayout.Y_AXIS));
         centerPanel.add(postListPanel);
 
         cp.add(centerPanelScrollable, "Center");
@@ -164,9 +167,13 @@ public class TopicScreen extends JFrame {
 
             contentArea.setFocusable(false);
             contentArea.setCursor(null);
+            contentArea.setEditable(false);
             contentArea.setLineWrap(true);
             contentArea.setWrapStyleWord(true);
-            contentArea.setEditable(false);
+            contentArea.setOpaque(false);
+            JPanel contentPanel = new JPanel(new BorderLayout());
+            contentPanel.add(contentArea);
+            contentPanel.setBorder(new EmptyBorder(20, 50, 50, 20));
 
             User author = manager.getUserOfId(post.authorID);
 
@@ -185,7 +192,7 @@ public class TopicScreen extends JFrame {
             metadataPanel.add(new JLabel(metadataLabelString.toString()));
 
             postPanel.add(metadataPanel);
-            postPanel.add(contentArea);
+            postPanel.add(contentPanel);
             postListPanel.add(postPanel);
         }
         postListPanel.revalidate();

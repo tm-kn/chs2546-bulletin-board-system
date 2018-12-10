@@ -3,11 +3,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 
 public class TopicListScreen extends JFrame {
     private BulletinBoardClientManager manager;
-    private DefaultListModel<Topic> topicJListModel = new DefaultListModel<Topic>();
+    private DefaultTableModel topicJTableModel = new DefaultTableModel();
+    private JTable topicJTable = new JTable(topicJTableModel);
     private JButton refreshJButton;
 
     TopicListScreen(BulletinBoardClientManager manager) {
@@ -26,47 +28,52 @@ public class TopicListScreen extends JFrame {
 		});
 
 		Container cp = getContentPane();
-		cp.setLayout (new BorderLayout ());
+		cp.setLayout (new BorderLayout());
 
-        createWestPanel();
+        createCenterPanel();
         createSouthPanel();
 
         setLocationRelativeTo(null);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize((int)(screenSize.width/1.5), (int)(screenSize.height/1.5));
+        setResizable(false);
+        setMinimumSize(new Dimension(600, 500));
     }
 
-    private void createWestPanel() {
-        JList topicJList = new JList(topicJListModel);
+    private void createCenterPanel() {
+        topicJTable.setDefaultEditor(Object.class, null);
+        topicJTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        topicJTable.setDragEnabled(false);
+        topicJTable.getTableHeader().setReorderingAllowed(false);
+        topicJTable.setFillsViewportHeight(true);
+        JScrollPane topicJScrollPane = new JScrollPane(topicJTable);
+        topicJTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        topicJList.addMouseListener(new java.awt.event.MouseAdapter() {
+        topicJTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JList list = (JList) evt.getSource();
+                JTable table = (JTable) evt.getSource();
                 if (evt.getClickCount() == 2) {
-                    int index = list.locationToIndex(evt.getPoint());
-                    Topic selectedTopic = (Topic) list.getModel().getElementAt(index);
+                    int row = table.rowAtPoint(evt.getPoint());
+                    if (row == -1) {
+                        return;
+                    }
+                    Topic selectedTopic = (Topic) topicJTable.getValueAt(
+                        row,
+                        1
+                    );
                     TopicListScreen.this.createTopicScreen(selectedTopic);
                 }
             }
         });
 
-        JScrollPane topicJScrollPane = new JScrollPane(topicJList);
-        topicJScrollPane.setMinimumSize (new Dimension (1000,200));
-
-        TitledBorder topicBorder = new TitledBorder("Topics");
-        topicBorder.setTitleJustification(TitledBorder.CENTER);
-        topicBorder.setTitlePosition(TitledBorder.TOP);
-
         JPanel topicJPanel = new JPanel();
-        topicJPanel.add(topicJScrollPane);
-        topicJPanel.setBorder(topicBorder);
 
         JButton openTopicJButton = new JButton("Open topic");
         openTopicJButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed (java.awt.event.ActionEvent evt) {
-                Topic selectedTopic = (Topic) topicJList.getSelectedValue();
+                Integer row = topicJTable.getSelectedRow();
 
-                if (selectedTopic == null) {
+                if (row == -1) {
                     JOptionPane.showMessageDialog(
                         TopicListScreen.this,
                         "You need to select topic first",
@@ -76,16 +83,23 @@ public class TopicListScreen extends JFrame {
                     return;
                 }
 
+                Topic selectedTopic = (Topic) topicJTable.getValueAt(
+                    topicJTable.getSelectedRow(),
+                    1
+                );
+
                 TopicListScreen.this.createTopicScreen(selectedTopic);
             }
         });
 
-        JPanel westPanel = new JPanel();
-        westPanel.add(topicJPanel);
-        westPanel.add(openTopicJButton);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBorder(new TitledBorder("Topics"));
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(topicJScrollPane, "Center");
+        centerPanel.add(openTopicJButton, "South");
 
 		Container cp = getContentPane();
-        cp.add(westPanel, "West");
+        cp.add(centerPanel, "Center");
     }
 
     private TopicScreen createTopicScreen(Topic topic) {
@@ -134,10 +148,23 @@ public class TopicListScreen extends JFrame {
 
     private void refreshData() {
         refreshJButton.setEnabled(false);
-        topicJListModel.clear();
+        topicJTableModel.getDataVector().removeAllElements();
+        topicJTableModel.setColumnIdentifiers(new String[]{
+            "#",
+            "Title",
+            "Author",
+            "Date",
+        });
         for(Topic topic: manager.getTopicList()) {
-            topicJListModel.addElement(topic);
+            topicJTableModel.addRow(new Object[]{
+                topic.id,
+                topic,
+                manager.getUserOfId(topic.ownerId).username,
+                topic.datetime,
+            });
         }
+        topicJTableModel.fireTableDataChanged();
+        topicJTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         refreshJButton.setEnabled(true);
         System.out.println("Refreshed topic list");
     }
