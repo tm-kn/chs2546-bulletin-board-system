@@ -33,7 +33,7 @@ public class TopicListScreen extends JFrame {
 
         setLocationRelativeTo(null);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(screenSize.width/2, screenSize.height/2);
+        setSize((int)(screenSize.width/1.5), (int)(screenSize.height/1.5));
     }
 
     private void createWestPanel() {

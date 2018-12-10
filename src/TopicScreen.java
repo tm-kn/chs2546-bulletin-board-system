@@ -28,6 +28,9 @@ public class TopicScreen extends JFrame {
     private void createGUI() {
         setTopicTitle(topic.toString());
 
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize((int)(screenSize.width/2), (int)(screenSize.height/2));
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         Container cp = getContentPane();
@@ -121,7 +124,6 @@ public class TopicScreen extends JFrame {
         deleteJButton.setVisible(false);
 
         cp.add(southPanel, "South");
-        pack();
     }
 
 
@@ -155,14 +157,35 @@ public class TopicScreen extends JFrame {
     private void updatePostList() {
         postListPanel.removeAll();
         for(Post post: topic.getPostList()) {
+            postListPanel.add(new JSeparator());
             JPanel postPanel = new JPanel();
-            postPanel.add(new Label(post.content));
+            postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.PAGE_AXIS));
+            JTextArea contentArea = new JTextArea(post.content);
+
+            contentArea.setFocusable(false);
+            contentArea.setCursor(null);
+            contentArea.setLineWrap(true);
+            contentArea.setLineWrap(true);
+            contentArea.setEditable(false);
+
             User author = manager.getUserOfId(post.authorID);
-            postPanel.add(new JLabel(author.username));
-            postPanel.add(new JLabel(post.datetime.toString()));
+
+            JPanel metadataPanel = new JPanel();
+
+            StringBuffer metadataLabelString = new StringBuffer();
+            metadataLabelString.append(
+                "Post #" + post.id + ": " +  author.username + " wrote at "
+                + post.datetime
+            );
+
             if (post.isPrivate) {
-                postPanel.add(new JLabel("(private)"));
+                metadataLabelString.append(" (private)");
             }
+
+            metadataPanel.add(new JLabel(metadataLabelString.toString()));
+
+            postPanel.add(metadataPanel);
+            postPanel.add(contentArea);
             postListPanel.add(postPanel);
         }
         postListPanel.revalidate();
@@ -192,6 +215,5 @@ public class TopicScreen extends JFrame {
         updatePostList();
 
         setTopicTitle(topic.toString());
-        pack();
     }
 }
