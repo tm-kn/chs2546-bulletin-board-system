@@ -35,10 +35,12 @@ public class TopicScreen extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
         centerPanel.add(titleJLabel);
 
+        JScrollPane centerPanelScrollable = new JScrollPane(centerPanel);
+
         postListPanel.setLayout(new BoxLayout(postListPanel, BoxLayout.PAGE_AXIS));
         centerPanel.add(postListPanel);
 
-        cp.add(centerPanel, "Center");
+        cp.add(centerPanelScrollable, "Center");
 
 
         JPanel southPanel = new JPanel();
@@ -190,5 +192,6 @@ public class TopicScreen extends JFrame {
         updatePostList();
 
         setTopicTitle(topic.toString());
+        pack();
     }
 }

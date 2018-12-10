@@ -45,6 +45,7 @@ public class BulletinBoardClient {
 
     private void launchLoggedInScreen(BulletinBoardClientManager manager) {
         TopicListScreen topicListScreen = new TopicListScreen(manager);
+        topicListScreen.setLocationRelativeTo(null);
         topicListScreen.setVisible(true);
     }
 }

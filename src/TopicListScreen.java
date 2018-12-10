@@ -96,6 +96,7 @@ public class TopicListScreen extends JFrame {
         };
 
         TopicScreen topicScreen = new TopicScreen(manager, topic, onDelete);
+        topicScreen.setLocationRelativeTo(this);
         topicScreen.setVisible(true);
         return topicScreen;
     }
