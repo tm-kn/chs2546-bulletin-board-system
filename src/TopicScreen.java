@@ -165,7 +165,7 @@ public class TopicScreen extends JFrame {
             contentArea.setFocusable(false);
             contentArea.setCursor(null);
             contentArea.setLineWrap(true);
-            contentArea.setLineWrap(true);
+            contentArea.setWrapStyleWord(true);
             contentArea.setEditable(false);
 
             User author = manager.getUserOfId(post.authorID);
@@ -174,7 +174,7 @@ public class TopicScreen extends JFrame {
 
             StringBuffer metadataLabelString = new StringBuffer();
             metadataLabelString.append(
-                "Post #" + post.id + ": " +  author.username + " wrote at "
+                "(#" + post.id + ") " +  author.username + " wrote at "
                 + post.datetime
             );
 
