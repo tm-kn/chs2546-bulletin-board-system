@@ -48,6 +48,70 @@ public class BulletinBoardClientManager {
         }
     }
 
+    public JavaSpace getSpace() {
+        return javaSpace;
+    }
+
+    public boolean addTopicSubscription(int topicID) {
+        Transaction.Created trc;
+
+        try {
+             trc = TransactionFactory.create(transactionManager, 3000);
+        } catch (Exception e) {
+             System.out.println("Could not create transaction " + e);
+             return false;
+        }
+
+        Transaction transaction = trc.transaction;
+
+        try {
+            User user = (User) javaSpace.take(new User(getUserId()), transaction, 1000);
+            if (user == null) {
+                transaction.abort();
+                return false;
+            }
+            user.addSubscribedTopic(topicID);
+            javaSpace.write(user, transaction, Lease.FOREVER);
+            transaction.commit();
+            System.out.println("Added subscription for topic " + topicID);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public boolean removeTopicSubscription(int topicID) {
+        Transaction.Created trc;
+
+        try {
+             trc = TransactionFactory.create(transactionManager, 3000);
+        } catch (Exception e) {
+             System.out.println("Could not create transaction " + e);
+             return false;
+        }
+
+        Transaction transaction = trc.transaction;
+
+        try {
+            User user = (User) javaSpace.take(new User(getUserId()), transaction, 1000);
+            if (user == null) {
+                transaction.abort();
+                return false;
+            }
+            user.removeSubscribedTopic(topicID);
+            javaSpace.write(user, transaction, Lease.FOREVER);
+            transaction.commit();
+            System.out.println("Removed subscription for topic " + topicID);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
     public boolean authenticateUser(String username, String password) {
         if (user != null) {
             throw new RuntimeException("Already authenticated");
@@ -81,6 +145,11 @@ public class BulletinBoardClientManager {
         System.out.println("Password is incorrect");
 
         return false;
+    }
+
+    public boolean isUserSubscribedToTopic(int topicID) {
+        refreshUser();
+        return user.isSubscribedToTopic(topicID);
     }
 
 

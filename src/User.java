@@ -3,7 +3,11 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import net.jini.core.entry.*;
 
 
@@ -13,6 +17,7 @@ public class User implements Entry {
     public String password;
     public String salt;
     public Date joinedAt;
+    public Integer[] subscribedTopics;
     private char[] charList;
 
     public User() {}
@@ -84,6 +89,41 @@ public class User implements Entry {
             e.printStackTrace();
             throw new RuntimeException("Cannot decode password from UTF-8");
         }
+    }
+
+    public void addSubscribedTopic(int topicID) {
+        if (subscribedTopics == null) {
+            subscribedTopics = new Integer[0];
+        }
+        List topics = new ArrayList<Integer>(Arrays.asList(subscribedTopics));
+        topics.add(topicID);
+        Set<Integer> topicsSet = new HashSet<Integer>(topics);
+        subscribedTopics = topicsSet.toArray(new Integer[topicsSet.size()]);
+    }
+
+    public void removeSubscribedTopic(int topicID) {
+        if (subscribedTopics == null) {
+            subscribedTopics = new Integer[0];
+        }
+
+        List topics = new ArrayList<Integer>(Arrays.asList(subscribedTopics));
+        topics.remove((Integer) topicID);
+        Set<Integer> topicsSet = new HashSet<Integer>(topics);
+        subscribedTopics = topicsSet.toArray(new Integer[topicsSet.size()]);
+    }
+
+    public boolean isSubscribedToTopic(int topicID) {
+        if (subscribedTopics == null) {
+            return false;
+        }
+
+        for(int id: subscribedTopics) {
+            if (id == topicID) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setCurrentJoinedAtDate() {

@@ -10,6 +10,7 @@ public class TopicScreen extends JFrame {
     private JLabel titleJLabel = new JLabel("Topic");
     private JButton refreshJButton;
     private JButton deleteJButton;
+    private JButton subscribeJButton;
     private JPanel postListPanel = new JPanel();
     private NewPostScreen newPostScreen;
     private EventListener onTopicDelete;
@@ -65,6 +66,33 @@ public class TopicScreen extends JFrame {
             }
         });
 
+        subscribeJButton = new JButton("Subscribe");
+        subscribeJButton.setVisible(false);
+        subscribeJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (manager.isUserSubscribedToTopic(topic.id)) {
+                    if (!manager.removeTopicSubscription(topic.id)) {
+                        JOptionPane.showMessageDialog(
+                            TopicScreen.this,
+                            "Something went wrong.",
+                            "Bulletin Board",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                } else {
+                    if (!manager.addTopicSubscription(topic.id)) {
+                        JOptionPane.showMessageDialog(
+                            TopicScreen.this,
+                            "Something went wrong.",
+                            "Bulletin Board",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                }
+
+                refreshData();
+            }
+        });
 
         deleteJButton = new JButton("Delete");
         deleteJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -124,6 +152,7 @@ public class TopicScreen extends JFrame {
         southPanel.add(refreshJButton);
         southPanel.add(replyJButton);
         southPanel.add(deleteJButton);
+        southPanel.add(subscribeJButton);
         deleteJButton.setVisible(false);
 
         cp.add(southPanel, "South");
@@ -218,6 +247,15 @@ public class TopicScreen extends JFrame {
         } else {
             deleteJButton.setVisible(false);
         }
+
+        if (manager.isUserSubscribedToTopic(topic.id)) {
+            subscribeJButton.setText("Unsubscribe");
+        } else {
+            subscribeJButton.setText("Subscribe");
+        }
+
+
+        subscribeJButton.setVisible(true);
 
         updatePostList();
 

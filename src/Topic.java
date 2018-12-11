@@ -17,6 +17,11 @@ public class Topic implements Entry {
         this.id = id;
     }
 
+    public Topic(int id, boolean deleted) {
+        this.id = id;
+        this.deleted = deleted;
+    }
+
     public Integer getLastPostID() {
         return lastPostID;
     }
