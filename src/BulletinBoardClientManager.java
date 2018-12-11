@@ -353,7 +353,11 @@ public class BulletinBoardClientManager {
                         }
 
                         // Skip private posts.
-                        if (post.isPrivate && !topic.ownerId.equals(this.user.id) && !post.authorID.equals(this.user.id)) {
+                        if (
+                            post.isPrivate
+                            && !topic.ownerId.equals(this.user.id)
+                            && !post.authorID.equals(this.user.id)
+                        ) {
                             continue;
                         }
 
