@@ -129,4 +129,11 @@ public class User implements Entry {
     public void setCurrentJoinedAtDate() {
         joinedAt = new Date();
     }
+
+    public Integer[] getTopicSubscriptions() {
+        if (subscribedTopics == null) {
+            return new Integer[]{};
+        }
+        return subscribedTopics;
+    }
 }

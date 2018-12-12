@@ -1,15 +1,28 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.rmi.server.UnicastRemoteObject;
 import net.jini.core.lease.*;
+import net.jini.core.event.*;
 import net.jini.space.JavaSpace;
+import net.jini.space.JavaSpace05;
+import net.jini.space.AvailabilityEvent;
 import net.jini.core.transaction.*;
 import net.jini.core.transaction.server.*;
+import net.jini.export.Exporter;
+import net.jini.jeri.BasicILFactory;
+import net.jini.jeri.BasicJeriExporter;
+import net.jini.jeri.tcp.TcpServerEndpoint;
 
 
 public class BulletinBoardClientManager {
     private JavaSpace javaSpace;
     private User user;
     private TransactionManager transactionManager;
+    private NotificationEventListener onNotification;
+
+    public BulletinBoardClientManager(NotificationEventListener onNotification) {
+        this.onNotification = onNotification;
+    }
 
     public User getUserOfId(int id) {
         try {
@@ -34,6 +47,10 @@ public class BulletinBoardClientManager {
         refreshUser();
         System.out.println("Current user ID:" + user.id);
         return user.id;
+    }
+
+    private JavaSpace05 getJavaSpace05() {
+        return (JavaSpace05) javaSpace;
     }
 
     public void connectToJavaSpace() throws Exception {
@@ -74,6 +91,7 @@ public class BulletinBoardClientManager {
             javaSpace.write(user, transaction, Lease.FOREVER);
             transaction.commit();
             System.out.println("Added subscription for topic " + topicID);
+            registerNotificationsForTopics(new Integer[]{topicID});
             return true;
         } catch(Exception e) {
             e.printStackTrace();
@@ -139,6 +157,8 @@ public class BulletinBoardClientManager {
         if (user.comparePassword(password)) {
             this.user = user;
 
+            registerNotificationsForUserTopics();
+
             return true;
         }
 
@@ -152,6 +172,78 @@ public class BulletinBoardClientManager {
         return user.isSubscribedToTopic(topicID);
     }
 
+    private Exporter getExporter() {
+        return new BasicJeriExporter(
+            TcpServerEndpoint.getInstance(0),
+            new BasicILFactory(),
+            false,
+            true
+        );
+    }
+
+    public void registerNotificationsForUserTopics() {
+        registerNotificationsForTopics(user.getTopicSubscriptions());
+    }
+
+    public void registerNotificationsForTopics(Integer[] topicIDs) {
+        List<Topic> templates = new ArrayList<Topic>();
+
+        for(Integer topicID: topicIDs) {
+            templates.add(new Topic(topicID));
+        }
+
+        RemoteEventListener topicListener = new RemoteEventListener() {
+            public void notify(RemoteEvent remoteEvent) {
+                AvailabilityEvent availabilityEvent = (AvailabilityEvent) remoteEvent;
+                try {
+                    Topic topic = (Topic) availabilityEvent.getEntry();
+
+                    System.out.println("Received notification event about topic " + topic.id);
+                    String message = null;
+
+                    if (topic.isDeleted() && topic.ownerId != getUserId()) {
+                        message = "Topic " + topic + " has been deleted";
+                        removeTopicSubscription(topic.id);
+                    } else if (!topic.isDeleted()) {
+                        topic = getTopicOfID(topic.id);
+                        Post post = topic.getLastPost();
+                        if (
+                            post.authorID != getUserId() && !post.isPrivate
+                        ) {
+                            message = "New public posts added in topic " + topic;
+                        } else if (
+                            post.authorID != getUserId()
+                            && post.isPrivate
+                            && topic.ownerId == getUserId()
+                        ) {
+                            message = "New private posts added in topic " + topic;
+                        }
+                    }
+
+                    if (message == null) {
+                        return;
+                    }
+
+                    System.out.println("Notification message: " + message);
+                    if (onNotification != null) {
+                        onNotification.onEvent(message);
+                    }
+                } catch(Exception e) {
+                    System.out.println("Could not receive object from the space");
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        try {
+            UnicastRemoteObject.exportObject(topicListener, 0);
+            getJavaSpace05().registerForAvailabilityEvent(
+                templates, null, false, topicListener, Lease.FOREVER, null
+            );
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private UserLastID getLastUserID(Transaction transaction) {
         UserLastID lastID;

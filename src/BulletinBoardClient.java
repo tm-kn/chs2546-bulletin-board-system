@@ -1,4 +1,3 @@
-import java.io.IOException;
 import javax.swing.JOptionPane;
 
 
@@ -15,7 +14,13 @@ public class BulletinBoardClient {
     }
 
     private void createManager() {
-        manager = new BulletinBoardClientManager();
+        NotificationEventListener onNotification = new NotificationEventListener() {
+            public void onEvent(String message) {
+                NotificationScreen notificationScreen = new NotificationScreen(message);
+                notificationScreen.show();
+            }
+        };
+        manager = new BulletinBoardClientManager(onNotification);
 
         // Connect to JavaSpace
         try {

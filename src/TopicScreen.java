@@ -137,10 +137,14 @@ public class TopicScreen extends JFrame {
                     }
                 });
 
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        if (onTopicDelete != null) {
+                            onTopicDelete.onEvent();
+                        }
 
-                if (onTopicDelete != null) {
-                    onTopicDelete.onEvent();
-                }
+                    }
+                });
 
                 dispatchEvent(new java.awt.event.WindowEvent(
                     TopicScreen.this,
@@ -231,7 +235,6 @@ public class TopicScreen extends JFrame {
     private void refreshData() {
         refreshJButton.setEnabled(false);
         Topic returnedTopic = manager.getTopicOfID(topic.id);
-        System.out.println("Refreshed data on topic screen " + topic.id);
         refreshJButton.setEnabled(true);
         if (returnedTopic == null) {
             JOptionPane.showMessageDialog(
@@ -240,6 +243,34 @@ public class TopicScreen extends JFrame {
             );
             return;
         }
+
+        if (returnedTopic.isDeleted()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    JOptionPane.showMessageDialog(
+                        TopicScreen.this, "Topic no longer exists", "Bulletin Board",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            });
+
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    if (onTopicDelete != null) {
+                        onTopicDelete.onEvent();
+                    }
+                }
+            });
+
+            dispatchEvent(new java.awt.event.WindowEvent(
+                TopicScreen.this,
+                java.awt.event.WindowEvent.WINDOW_CLOSING
+            ));
+            return;
+        }
+
+        System.out.println("Refreshed data on topic screen " + topic.id);
         topic = returnedTopic;
 
         if (topic.ownerId.equals(manager.getUserId())) {

@@ -51,6 +51,13 @@ public class Topic implements Entry {
         return postList;
     }
 
+    public Post getLastPost() {
+        if (postList == null || postList.length == 0) {
+            return null;
+        }
+        return postList[postList.length - 1];
+    }
+
     public boolean isDeleted() {
         if (deleted == null) {
             return false;
@@ -65,8 +72,6 @@ public class Topic implements Entry {
     public void setDeleted() {
         deleted = true;
         lastPostID = null;
-        title = null;
-        ownerId = null;
     }
 
     public void setCurrentDateTime() {
