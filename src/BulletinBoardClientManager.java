@@ -192,6 +192,11 @@ public class BulletinBoardClientManager {
             templates.add(new Topic(topicID));
         }
 
+        if (templates.size() == 0) {
+            System.out.println("No topics to be subscribed.");
+            return;
+        }
+
         RemoteEventListener topicListener = new RemoteEventListener() {
             public void notify(RemoteEvent remoteEvent) {
                 AvailabilityEvent availabilityEvent = (AvailabilityEvent) remoteEvent;
@@ -240,8 +245,10 @@ public class BulletinBoardClientManager {
             getJavaSpace05().registerForAvailabilityEvent(
                 templates, null, false, topicListener, Lease.FOREVER, null
             );
+            System.out.println("Subscribed to topic notifications");
         } catch(Exception e) {
             e.printStackTrace();
+            System.out.println("Could not subscribe to topic notifications");
         }
     }
 
