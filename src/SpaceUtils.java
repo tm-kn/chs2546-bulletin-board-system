@@ -1,3 +1,7 @@
+/*
+ * Code by Gary Allen
+ */
+
 import net.jini.core.discovery.LookupLocator;
 import net.jini.core.lookup.ServiceRegistrar;
 import net.jini.core.lookup.ServiceTemplate;

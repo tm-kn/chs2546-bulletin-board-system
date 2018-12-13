@@ -2,7 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-class RegisterScreen extends JFrame {
+public class RegisterScreen extends JFrame {
     private BulletinBoardClientManager manager;
     private EventListener onLogin;
 
